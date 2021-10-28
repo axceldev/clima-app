@@ -17,8 +17,10 @@ class Busquedas{
     }
 
     get paramsOpenWeather(){
-        return{
-            
+        return{ 
+             'appid': process.env.OPENWEATHERMAP_KEY,
+             'units': 'metric',
+             'lang': 'es' 
         }
     }
 
@@ -48,22 +50,30 @@ class Busquedas{
     async climaLugar(lat, lon){
 
         try {
-            //intance
-            const resp = await axios.get(`api.openweathermap.org/data/2.5/weather?lat=2.45917&lon=-76.60028&appid=8f918d3a7319a25c5ed46f9e49851728&units=metric&lang=es`)
-            //resp.data
-            console.log(resp.data);
-            //retornar objecto
-            return{
-               desc: '',
-               min: '',
-               max: '',
-               temp: '' 
+ 
+            const intances  = axios.create({
+                baseURL: `https://api.openweathermap.org/data/2.5/weather`,
+                params: {...this.paramsOpenWeather, lat, lon}
+            });
+    
+            const resp = await intances.get();
+            const {weather, main} = resp.data;
+
+            return {
+                desc: weather[0].description,
+                min: main.temp_min,
+                max: main.temp_max,
+                temp: main.temp
             }
+                
             
         } catch (error) {
             console.log(error);
-            return [];
+            return []; 
         }
+
+
+
 
     }
 
